@@ -7,15 +7,19 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    private const val PI_BASE_URL = "http://AgentJee.local:8000"
+    private var baseUrl = "http://AgentJee.local:8000"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(8, TimeUnit.SECONDS)
         .build()
 
+    fun updateBaseUrl(newUrl: String) {
+        baseUrl = newUrl
+    }
+
     fun get(path: String): String? = try {
-        val req = Request.Builder().url("$PI_BASE_URL$path").build()
+        val req = Request.Builder().url("$baseUrl$path").build()
         client.newCall(req).execute().body?.string()
     } catch (e: Exception) {
         null
@@ -23,7 +27,7 @@ object ApiClient {
 
     fun post(path: String, body: String): String? = try {
         val rb = body.toRequestBody("application/json".toMediaType())
-        val req = Request.Builder().url("$PI_BASE_URL$path").post(rb).build()
+        val req = Request.Builder().url("$baseUrl$path").post(rb).build()
         client.newCall(req).execute().body?.string()
     } catch (e: Exception) {
         null

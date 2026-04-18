@@ -2,18 +2,15 @@ package com.serhanensar.agentjee.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,9 +18,9 @@ import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
+import androidx.wear.compose.foundation.rotary.rotary
 import androidx.wear.compose.material.*
 import com.serhanensar.agentjee.data.model.Page
-import kotlinx.coroutines.launch
 
 @Composable
 fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
@@ -38,37 +35,33 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
 
     val listState = rememberScalingLazyListState()
     val focusRequester = remember { FocusRequester() }
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.Black),
-        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) },
+        vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) }
     ) {
         ScalingLazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .onRotaryScrollEvent { event ->
-                    coroutineScope.launch {
-                        listState.scrollBy(event.verticalScrollPixels)
-                    }
-                    true
-                }
+                // En akıcı bezel (rotary) kaydırma yöntemi budur. 
+                // Donanım tekerleği doğrudan ScalingLazyColumn state'ine bağlanır.
+                .rotary(rotaryScrollableState = listState, focusRequester = focusRequester)
                 .focusRequester(focusRequester)
                 .focusable(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(top = 40.dp, bottom = 40.dp),
-            autoCentering = AutoCenteringParams(itemIndex = 1) // Başlığı değil, ilk menü öğesini ortalar
+            contentPadding = PaddingValues(top = 50.dp, bottom = 50.dp),
+            autoCentering = AutoCenteringParams(itemIndex = 1)
         ) {
             item {
                 Text(
                     "AgentJee",
                     color = Color(0xFF22C55E),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    style = MaterialTheme.typography.title2.copy(
+                        fontWeight = FontWeight.ExtraBold
+                    ),
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
             }
             items(items) { (icon, label, target) ->
@@ -78,7 +71,7 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
                 Chip(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp),
+                        .padding(horizontal = 12.dp),
                     onClick = {
                         if (target == Page.FILES) onFiles()
                         else onNavigate(target)
@@ -96,13 +89,18 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
                         }
                     ),
                     label = {
-                        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        Text(label, fontWeight = FontWeight.Bold)
                     },
                     icon = {
-                        Text(icon, fontSize = 16.sp)
+                        Text(icon, fontSize = 18.sp)
                     }
                 )
             }
         }
+    }
+    
+    // Uygulama açıldığında odağı bu listeye vererek bezelin hemen çalışmasını sağlar
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
