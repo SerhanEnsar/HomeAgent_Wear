@@ -46,8 +46,8 @@ fun SettingsScreen(onBack: () -> Unit) {
             try {
                 val j = JSONObject(resp)
                 ip = j.optString("ip", "—")
-                power = if (j.isNull("power_w")) "—" else "${j.getDouble("power_w")} W"
-                fan = if (j.isNull("fan_rpm")) "—" else "${j.getInt("fan_rpm")} RPM"
+                power = j.optString("power", "—")
+                fan = j.optString("fan", "—")
                 error = false
             } catch (e: Exception) { error = true }
         } else error = true
