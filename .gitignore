@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Raspberry Pi Kod Aynası (Sadece AI Agent analizi için)
+/raspberry_mirror
