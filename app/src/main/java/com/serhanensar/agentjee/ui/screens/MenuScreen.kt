@@ -1,13 +1,9 @@
 package com.serhanensar.agentjee.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -21,6 +17,10 @@ import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
+import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
+import androidx.wear.compose.foundation.lazy.items
+import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.*
 import com.serhanensar.agentjee.data.model.Page
 import kotlinx.coroutines.launch
@@ -36,31 +36,31 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
         Triple("⏻", "Shutdown", Page.CONFIRM_SHUTDOWN)
     )
 
-    val listState = rememberLazyListState()
+    val listState = rememberScalingLazyListState()
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
+        modifier = Modifier.fillMaxSize().background(Color.Black),
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
     ) {
-        LazyColumn(
+        ScalingLazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .onRotaryScrollEvent { event ->
                     coroutineScope.launch {
-                        listState.scrollBy(event.verticalScrollPixels * 2f)
+                        listState.scrollBy(event.verticalScrollPixels)
                     }
                     true
                 }
                 .focusRequester(focusRequester)
                 .focusable(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(vertical = 24.dp)
+            contentPadding = PaddingValues(top = 40.dp, bottom = 40.dp),
+            autoCentering = AutoCenteringParams(itemIndex = 1) // Başlığı değil, ilk menü öğesini ortalar
         ) {
             item {
                 Text(
@@ -68,40 +68,40 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
                     color = Color(0xFF22C55E),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp)
+                    modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
             items(items) { (icon, label, target) ->
                 val isRed = target == Page.CONFIRM_SHUTDOWN
                 val isAmber = target == Page.CONFIRM_REBOOT
-                val cardColor = when {
-                    isRed -> Color(0xFF3F0000)
-                    isAmber -> Color(0xFF3F2A00)
-                    else -> Color(0xFF1C1F3A)
-                }
-                val textColor = when {
-                    isRed -> Color(0xFFEF4444)
-                    isAmber -> Color(0xFFF59E0B)
-                    else -> Color.White
-                }
-                Box(
+                
+                Chip(
                     modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .padding(vertical = 4.dp)
-                        .background(cardColor, shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
-                        .clickable {
-                            if (target == Page.FILES) onFiles()
-                            else onNavigate(target)
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    onClick = {
+                        if (target == Page.FILES) onFiles()
+                        else onNavigate(target)
+                    },
+                    colors = ChipDefaults.chipColors(
+                        backgroundColor = when {
+                            isRed -> Color(0xFF3F0000)
+                            isAmber -> Color(0xFF3F2A00)
+                            else -> Color(0xFF1C1F3A)
+                        },
+                        contentColor = when {
+                            isRed -> Color(0xFFEF4444)
+                            isAmber -> Color(0xFFF59E0B)
+                            else -> Color.White
                         }
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(icon, fontSize = 18.sp)
-                        Spacer(Modifier.width(10.dp))
-                        Text(label, color = textColor, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    ),
+                    label = {
+                        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    },
+                    icon = {
+                        Text(icon, fontSize = 16.sp)
                     }
-                }
+                )
             }
         }
     }
