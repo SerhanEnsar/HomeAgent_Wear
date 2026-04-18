@@ -2,15 +2,18 @@ package com.serhanensar.agentjee.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -18,9 +21,9 @@ import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
-import androidx.wear.compose.foundation.rotary.rotary
 import androidx.wear.compose.material.*
 import com.serhanensar.agentjee.data.model.Page
+import kotlinx.coroutines.launch
 
 @Composable
 fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
@@ -35,6 +38,7 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
 
     val listState = rememberScalingLazyListState()
     val focusRequester = remember { FocusRequester() }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.Black),
@@ -45,9 +49,14 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                // En akıcı bezel (rotary) kaydırma yöntemi budur. 
-                // Donanım tekerleği doğrudan ScalingLazyColumn state'ine bağlanır.
-                .rotary(rotaryScrollableState = listState, focusRequester = focusRequester)
+                .onRotaryScrollEvent { event ->
+                    coroutineScope.launch {
+                        // animateScrollBy kullanarak bezel hareketini yumuşatıyoruz.
+                        // Bu yöntem kare atlamalarını (stutter) engeller.
+                        listState.animateScrollBy(event.verticalScrollPixels)
+                    }
+                    true
+                }
                 .focusRequester(focusRequester)
                 .focusable(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -99,7 +108,6 @@ fun MenuScreen(onNavigate: (Page) -> Unit, onFiles: () -> Unit) {
         }
     }
     
-    // Uygulama açıldığında odağı bu listeye vererek bezelin hemen çalışmasını sağlar
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
