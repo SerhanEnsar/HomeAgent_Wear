@@ -2,7 +2,7 @@ package com.serhanensar.agentjee.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,11 +40,12 @@ fun FilesScreen(
     var items by remember { mutableStateOf<List<FileItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf(false) }
-    
+
     val listState = rememberScalingLazyListState()
     val focusRequester = remember { FocusRequester() }
     val coroutineScope = rememberCoroutineScope()
 
+    // Geri tuşu hiyerarşisi: Path -> Mount -> Menu
     androidx.activity.compose.BackHandler {
         when {
             currentPath.isNotEmpty() -> {
@@ -97,15 +98,16 @@ fun FilesScreen(
 
     Scaffold(
         modifier = Modifier.fillMaxSize().background(Color.Black),
-        positionIndicator = { PositionIndicator(scalingLazyListState = listState) }
+        positionIndicator = { PositionIndicator(scalingLazyListState = listState) },
+        vignette = { Vignette(vignettePosition = VignettePosition.TopAndBottom) }
     ) {
         if (isLoading) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(indicatorColor = Color(0xFF22C55E))
             }
         } else if (error) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Bağlantı hatası", color = Color.Red, fontSize = 12.sp)
+                Text("Pi'ye bağlanılamadı", color = Color.Red, fontSize = 12.sp, textAlign = TextAlign.Center)
             }
         } else {
             ScalingLazyColumn(
@@ -113,12 +115,16 @@ fun FilesScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .onRotaryScrollEvent { event ->
-                        coroutineScope.launch { listState.scrollBy(event.verticalScrollPixels) }
+                        coroutineScope.launch { 
+                            // animateScrollBy ile pürüzsüz kaydırma
+                            listState.animateScrollBy(event.verticalScrollPixels) 
+                        }
                         true
                     }
                     .focusRequester(focusRequester)
                     .focusable(),
-                contentPadding = PaddingValues(top = 40.dp, bottom = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                contentPadding = PaddingValues(top = 45.dp, bottom = 45.dp),
                 autoCentering = AutoCenteringParams(itemIndex = 1)
             ) {
                 item {
@@ -126,7 +132,7 @@ fun FilesScreen(
                     else if (currentPath.isEmpty()) currentMount
                     else currentPath.substringAfterLast("/")
                     Text(title, color = Color(0xFF22C55E),
-                        fontSize = 13.sp, fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.caption1.copy(fontWeight = FontWeight.ExtraBold),
                         modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
                         textAlign = TextAlign.Center)
                 }
@@ -134,7 +140,7 @@ fun FilesScreen(
                     Chip(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                            .padding(horizontal = 10.dp),
                         onClick = {
                             if (item.isDir) {
                                 if (currentMount.isEmpty()) onMountChange(item.name)
