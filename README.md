@@ -2,6 +2,21 @@
 
 AgentJee is the Wear OS companion app for the HomeAgent smart home system, designed for Samsung Galaxy Watch 4 Classic and other Wear OS 3+ devices. It provides a wrist-level interface to monitor your Raspberry Pi's system health and manage files on the go.
 
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/images/watch_01.jpg" width="200"/></td>
+    <td><img src="docs/images/watch_02.jpg" width="200"/></td>
+    <td><img src="docs/images/watch_03.jpg" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/watch_04.jpg" width="200"/></td>
+    <td><img src="docs/images/watch_05.jpg" width="200"/></td>
+    <td><img src="docs/images/watch_06.jpg" width="200"/></td>
+  </tr>
+</table>
+
 ## ✨ Features
 
 - **Dashboard** — Real-time CPU, RAM, Disk usage and CPU temperature (auto-refreshes every 3s)
