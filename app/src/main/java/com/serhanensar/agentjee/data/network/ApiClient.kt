@@ -1,5 +1,6 @@
 package com.serhanensar.agentjee.data.network
 
+import android.content.Context
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -9,24 +10,29 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
     private var baseUrl = "http://AgentJee.local:8000"
-    // TODO: API Key'i local.properties'e ekleyin ve BuildConfig üzerinden okuyun.
-    // local.properties'e şunu ekleyin (git'e commit etmeyin):
-    //   HOME_AGENT_API_KEY=your_api_key_here
-    private const val API_KEY = BuildConfig.HOME_AGENT_API_KEY
+    // API key is read at runtime from SharedPreferences (set via the app's settings).
+    // Never hardcode credentials in source code.
+    private var apiKey: String = ""
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(8, TimeUnit.SECONDS)
         .readTimeout(8, TimeUnit.SECONDS)
         .build()
 
+    /** Call once on startup (e.g. in MainActivity) to load saved credentials. */
+    fun init(context: Context) {
+        val prefs = context.getSharedPreferences("agentjee_prefs", Context.MODE_PRIVATE)
+        baseUrl = prefs.getString("base_url", "http://AgentJee.local:8000") ?: "http://AgentJee.local:8000"
+        apiKey  = prefs.getString("api_key", "") ?: ""
+    }
+
     fun updateBaseUrl(newUrl: String) {
         baseUrl = newUrl
     }
 
     fun get(path: String): String? = try {
-        // API Key'i sorgu parametresi olarak ekliyoruz
         val url = "$baseUrl$path".toHttpUrlOrNull()?.newBuilder()
-            ?.addQueryParameter("api_key", API_KEY)
+            ?.addQueryParameter("api_key", apiKey)
             ?.build()
 
         if (url != null) {
@@ -39,7 +45,7 @@ object ApiClient {
 
     fun post(path: String, body: String): String? = try {
         val url = "$baseUrl$path".toHttpUrlOrNull()?.newBuilder()
-            ?.addQueryParameter("api_key", API_KEY)
+            ?.addQueryParameter("api_key", apiKey)
             ?.build()
 
         if (url != null) {
