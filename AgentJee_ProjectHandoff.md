@@ -10,24 +10,24 @@ tüm bileşenleri, dosyaları, komutları ve çalışma akışlarını eksiksiz 
 **AgentJee**, bir Raspberry Pi üzerinde çalışan, aşağıdaki istemcilerden yönetilebilen
 bir ev/yerel ağ kontrol sistemidir:
 
-| İstemci | Teknoloji | Durum |
-|---|---|---|
-| Web Panel | FastAPI + Jinja2 + vanilla JS | ✅ Aktif |
-| Telegram Bot | Python polling | ✅ Aktif |
-| ESP32 Dokunmatik Ekran | Arduino C++ + TFT_eSPI | ✅ Aktif |
-| Wear OS Saati (Galaxy Watch 4 Classic) | Kotlin + Jetpack Compose | 🔧 Geliştiriliyor |
-| Mobil Uygulama (eski) | React Native / Expo Go | ⚠️ Eski, aktif değil |
+| İstemci                                | Teknoloji                     | Durum                |
+| -------------------------------------- | ----------------------------- | -------------------- |
+| Web Panel                              | FastAPI + Jinja2 + vanilla JS | ✅ Aktif             |
+| Telegram Bot                           | Python polling                | ✅ Aktif             |
+| ESP32 Dokunmatik Ekran                 | Arduino C++ + TFT_eSPI        | ✅ Aktif             |
+| Wear OS Saati (Galaxy Watch 4 Classic) | Kotlin + Jetpack Compose      | 🔧 Geliştiriliyor    |
+| Mobil Uygulama (eski)                  | React Native / Expo Go        | ⚠️ Eski, aktif değil |
 
 ---
 
 ## 2. Donanım
 
-| Donanım | Detay |
-|---|---|
-| Sunucu | Raspberry Pi (Linux, ARM) |
-| Ekran İstemci | ESP32 + TFT 240x320 dokunmatik ekran |
-| Saat İstemci | Samsung Galaxy Watch 4 Classic (One UI Watch 6 / Wear OS 4 tabanlı) |
-| Geliştirici Bilgisayar | MacBook (Apple Silicon M4) |
+| Donanım                | Detay                                                               |
+| ---------------------- | ------------------------------------------------------------------- |
+| Sunucu                 | Raspberry Pi (Linux, ARM)                                           |
+| Ekran İstemci          | ESP32 + TFT 240x320 dokunmatik ekran                                |
+| Saat İstemci           | Samsung Galaxy Watch 4 Classic (One UI Watch 6 / Wear OS 4 tabanlı) |
+| Geliştirici Bilgisayar | MacBook (Apple Silicon M4)                                          |
 
 ---
 
@@ -75,6 +75,7 @@ ssh serhanensar@AgentJee.local
 ```
 
 SSH key kuruluysa şifresiz girer. Key kurulu değilse:
+
 ```bash
 ssh-copy-id serhanensar@<PI_IP_ADRESI>
 ```
@@ -82,6 +83,7 @@ ssh-copy-id serhanensar@<PI_IP_ADRESI>
 ### 4.2 FastAPI Web Panel Başlatma
 
 Pi üzerinde:
+
 ```bash
 cd /home/serhanensar/HomeAgent
 source venv/bin/activate
@@ -89,6 +91,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 Arka planda çalıştırmak için:
+
 ```bash
 cd /home/serhanensar/HomeAgent
 source venv/bin/activate
@@ -108,6 +111,7 @@ TG_TOKEN=<token> TG_CHAT_ID=<chat_id> python app/telegram_control.py
 ```
 
 Arka planda:
+
 ```bash
 nohup TG_TOKEN=<token> TG_CHAT_ID=<chat_id> python app/telegram_control.py &
 ```
@@ -133,30 +137,30 @@ pip install fastapi uvicorn psutil docker python-multipart itsdangerous starlett
 
 ## 5. FastAPI — API Endpoint Listesi
 
-| Method | Endpoint | Açıklama |
-|---|---|---|
-| GET | `/` | Dashboard HTML |
-| GET | `/login` | Giriş sayfası |
-| POST | `/login` | Giriş işlemi |
-| GET | `/logout` | Çıkış |
-| GET | `/profile` | Profil sayfası |
-| POST | `/profile/password` | Şifre değiştirme |
-| GET | `/files` | Dosya gezgini HTML |
-| GET | `/settings` | Ayarlar HTML |
-| GET | `/api/status` | CPU, RAM, Disk, Sıcaklık (JSON) |
-| GET | `/api/docker/containers` | Container listesi |
-| POST | `/api/docker/{name}/start` | Container başlat |
-| POST | `/api/docker/{name}/stop` | Container durdur |
-| GET | `/api/files/devices` | Mount listesi |
-| GET | `/api/files/list?mount=&path=` | Dizin içeriği |
-| GET | `/api/files/download?mount=&path=` | Dosya indir |
-| POST | `/api/files/rename` | Dosya/klasör yeniden adlandır |
-| POST | `/api/files/delete` | Dosya/klasör sil |
-| GET | `/api/settings/info` | IP, güç, fan bilgisi |
-| GET | `/api/config` | Panel ayarları |
-| POST | `/api/config` | Panel ayarları güncelle |
-| POST | `/api/system/shutdown` | Sistemi kapat |
-| POST | `/api/system/reboot` | Sistemi yeniden başlat |
+| Method | Endpoint                           | Açıklama                        |
+| ------ | ---------------------------------- | ------------------------------- |
+| GET    | `/`                                | Dashboard HTML                  |
+| GET    | `/login`                           | Giriş sayfası                   |
+| POST   | `/login`                           | Giriş işlemi                    |
+| GET    | `/logout`                          | Çıkış                           |
+| GET    | `/profile`                         | Profil sayfası                  |
+| POST   | `/profile/password`                | Şifre değiştirme                |
+| GET    | `/files`                           | Dosya gezgini HTML              |
+| GET    | `/settings`                        | Ayarlar HTML                    |
+| GET    | `/api/status`                      | CPU, RAM, Disk, Sıcaklık (JSON) |
+| GET    | `/api/docker/containers`           | Container listesi               |
+| POST   | `/api/docker/{name}/start`         | Container başlat                |
+| POST   | `/api/docker/{name}/stop`          | Container durdur                |
+| GET    | `/api/files/devices`               | Mount listesi                   |
+| GET    | `/api/files/list?mount=&path=`     | Dizin içeriği                   |
+| GET    | `/api/files/download?mount=&path=` | Dosya indir                     |
+| POST   | `/api/files/rename`                | Dosya/klasör yeniden adlandır   |
+| POST   | `/api/files/delete`                | Dosya/klasör sil                |
+| GET    | `/api/settings/info`               | IP, güç, fan bilgisi            |
+| GET    | `/api/config`                      | Panel ayarları                  |
+| POST   | `/api/config`                      | Panel ayarları güncelle         |
+| POST   | `/api/system/shutdown`             | Sistemi kapat                   |
+| POST   | `/api/system/reboot`               | Sistemi yeniden başlat          |
 
 **Not:** Tüm `/api/*` endpoint'leri login gerektirir. Session cookie ile kimlik doğrulama yapılır.
 
@@ -166,17 +170,17 @@ pip install fastapi uvicorn psutil docker python-multipart itsdangerous starlett
 
 ### 6.1 Proje Bilgileri
 
-| Alan | Değer |
-|---|---|
-| Proje adı | HomeAgent (Android Studio'daki) |
-| Uygulama adı | AgentJee |
-| Package | `com.serhanensar.agentjee` |
-| Konum (Mac) | `/Users/serhanensar/AndroidStudioProjects/HomeAgent/` |
-| Dil | Kotlin |
-| UI Framework | Jetpack Compose for Wear OS |
-| Min SDK | API 30 (Wear OS 3) |
-| Target SDK | API 36 (Android 16 / Wear OS 6) |
-| Build config | Kotlin DSL (`build.gradle.kts`) |
+| Alan         | Değer                                                 |
+| ------------ | ----------------------------------------------------- |
+| Proje adı    | HomeAgent (Android Studio'daki)                       |
+| Uygulama adı | AgentJee                                              |
+| Package      | `com.serhanensar.agentjee`                            |
+| Konum (Mac)  | `/Users/serhanensar/AndroidStudioProjects/HomeAgent/` |
+| Dil          | Kotlin                                                |
+| UI Framework | Jetpack Compose for Wear OS                           |
+| Min SDK      | API 30 (Wear OS 3)                                    |
+| Target SDK   | API 36 (Android 16 / Wear OS 6)                       |
+| Build config | Kotlin DSL (`build.gradle.kts`)                       |
 
 ### 6.2 Bağımlılıklar (`build.gradle.kts`)
 
@@ -240,11 +244,13 @@ Android Studio → Device Manager → Wear OS XL Round (API 36, arm64) → ▶ S
 Üst çubukta hedef olarak `Wear OS XL Round` seçili iken → ▶ Run
 
 **Gerçek saate deploy (Wi-Fi ADB):**
+
 ```bash
 # Saatin IP'sini bul: Saat → Ayarlar → Wi-Fi → Bağlı ağ → Ayrıntılar
 adb connect <SAAT_IP>:5555
 adb devices   # bağlantıyı doğrula
 ```
+
 Ardından Android Studio'da hedef olarak `samsung SM-R890` seç → ▶ Run
 
 ---
@@ -291,30 +297,31 @@ Upload butonu (→)
 
 ### 8.1 Komutlar
 
-| Komut / Buton | İşlev |
-|---|---|
-| `/ping` | Pi ayakta mı? |
-| `/ip` | IP ve Wi-Fi SSID |
-| `/status` | CPU, RAM, Disk, Sıcaklık |
-| `/uptime` | Çalışma süresi |
-| `/panel` | Panel URL |
-| `/whoami` | Kullanıcı, host, UID |
-| `/disk` | Disk kullanımı |
-| `/reboot` | Yeniden başlat (onay popup) |
-| `/shutdown` | Kapat (onay popup) |
-| `/menu` | Klavye menüsü göster |
-| `📊 Status` | Klavye butonu |
-| `💾 Disk` | Klavye butonu |
-| `👤 WhoAmI` | Klavye butonu |
-| `🔄 Reboot` | Klavye butonu (onaylı) |
-| `⛔ Shutdown` | Klavye butonu (onaylı) |
-| `❎ Hide` | Klavyeyi gizle |
+| Komut / Buton | İşlev                       |
+| ------------- | --------------------------- |
+| `/ping`       | Pi ayakta mı?               |
+| `/ip`         | IP ve Wi-Fi SSID            |
+| `/status`     | CPU, RAM, Disk, Sıcaklık    |
+| `/uptime`     | Çalışma süresi              |
+| `/panel`      | Panel URL                   |
+| `/whoami`     | Kullanıcı, host, UID        |
+| `/disk`       | Disk kullanımı              |
+| `/reboot`     | Yeniden başlat (onay popup) |
+| `/shutdown`   | Kapat (onay popup)          |
+| `/menu`       | Klavye menüsü göster        |
+| `📊 Status`   | Klavye butonu               |
+| `💾 Disk`     | Klavye butonu               |
+| `👤 WhoAmI`   | Klavye butonu               |
+| `🔄 Reboot`   | Klavye butonu (onaylı)      |
+| `⛔ Shutdown` | Klavye butonu (onaylı)      |
+| `❎ Hide`     | Klavyeyi gizle              |
 
 ### 8.2 Durum Dosyası
 
 ```
 /home/serhanensar/HomeAgent/app/telegram_state.txt
 ```
+
 Son işlenen `update_id` burada tutulur. Bot yeniden başlatıldığında kaldığı yerden devam eder.
 
 ---
@@ -400,16 +407,16 @@ TG_TOKEN=<token> TG_CHAT_ID=<chat_id> python app/telegram_control.py
 
 ## 12. Planlanan / Eksik Özellikler
 
-| Özellik | Durum | Not |
-|---|---|---|
-| Wear OS - Docker kontrol | ❌ Yok | İleride eklenecek |
-| Wear OS - mDNS IP çözümü | ❌ Yok | Şu an sabit IP |
-| Pi Panel - CORS middleware | ⚠️ Eksik | Wear OS için eklenecek |
-| FastAPI - `/api/files/mkdir` | ❌ Yok | ESP32 kodu kullanıyor ama endpoint yok |
-| FastAPI - `/api/files/trash` | ❌ Yok | ESP32 kodu kullanıyor ama endpoint yok |
-| FastAPI - `/api/files/move` | ❌ Yok | ESP32 kodu kullanıyor ama endpoint yok |
-| FastAPI - `/api/files/copy` | ❌ Yok | ESP32 kodu kullanıyor ama endpoint yok |
-| FastAPI - `/api/info` | ✅ Aktif | ESP32 settings için kullanılıyor |
+| Özellik                      | Durum    | Not                                    |
+| ---------------------------- | -------- | -------------------------------------- |
+| Wear OS - Docker kontrol     | ❌ Yok   | İleride eklenecek                      |
+| Wear OS - mDNS IP çözümü     | ❌ Yok   | Şu an sabit IP                         |
+| Pi Panel - CORS middleware   | ⚠️ Eksik | Wear OS için eklenecek                 |
+| FastAPI - `/api/files/mkdir` | ❌ Yok   | ESP32 kodu kullanıyor ama endpoint yok |
+| FastAPI - `/api/files/trash` | ❌ Yok   | ESP32 kodu kullanıyor ama endpoint yok |
+| FastAPI - `/api/files/move`  | ❌ Yok   | ESP32 kodu kullanıyor ama endpoint yok |
+| FastAPI - `/api/files/copy`  | ❌ Yok   | ESP32 kodu kullanıyor ama endpoint yok |
+| FastAPI - `/api/info`        | ✅ Aktif | ESP32 settings için kullanılıyor       |
 
 ---
 
