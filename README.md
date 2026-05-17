@@ -105,6 +105,10 @@ AgentJee communicates with the following HomeAgent endpoints:
 | [HomeAgent-Mobile-K](https://github.com/serhanensar/HomeAgent-Mobile-K) | Android/Tablet app (Jetpack Compose) |
 | [HomeAgentMobile](https://github.com/serhanensar/HomeAgentMobile) | Cross-platform mobile app (Expo) |
 
+## 👨‍💻 Developer
+
+Created and developed by **[Serhan Ensar](https://github.com/SerhanEnsar)**.
+
 ## 📄 License
 
 MIT
