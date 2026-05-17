@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Serhan Ensar. All rights reserved.
 package com.serhanensar.agentjee.ui.components
 
 import androidx.compose.foundation.background

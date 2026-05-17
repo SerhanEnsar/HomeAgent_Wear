@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Serhan Ensar. All rights reserved.
 package com.serhanensar.agentjee.presentation.theme
 
 import androidx.compose.runtime.Composable
